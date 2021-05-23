@@ -1,46 +1,17 @@
 const express = require('express');
-const fs = require('fs');
-const notes = require('./db/db.json');
-const path = require('path');
+
+const PORT = process.env.PORT || 3001;
 const app = express();
-const PORT = process.env.PORT || 3001
+const apiRoutes = require('./routes/apiRoutes');
+const htmlRoutes = require('./routes/htmlRoutes');
 
-noteID = notes.length
-
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
-app.get('/api/notes', function (req, res) {
-    return res.json(notes);
-});
-
-app.post('/api/notes', function (req, res) {
-    const newNote = req.body;
-
-})
-
-app.delete('/api/notes/:id', function (req, res) {
-    res.send('DELETE')
-
-    const id = req.params.id;
-
-})
-
-
-
-
-
-
 app.use(express.static('public'));
 
-app.get('/notes', function (req, res) {
-    res.sendFile(path.join(__dirname, 'public/notes.html'));
-});
+app.use('/api', apiRoutes);
+app.use('/', htmlRoutes);
 
-app.get('*', function(req, res) {
-    res.sendFile(path.join(__dirname, 'public/index.html'));
-});
-
-app.listen(PORT, function () {
-    console.log(`App is listening on Port ${PORT}!`);
+app.listen(PORT, () => {
+    console.log(`Listening on port ${PORT}!`);
 });

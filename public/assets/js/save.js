@@ -2,7 +2,7 @@ const util = require('util');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 
-const storedNote = util.promisify(fs.readFile);
+const readNote = util.promisify(fs.readFile);
 const writeNote = util.promisify(fs.writeFile);
 
 class Save {
@@ -10,10 +10,10 @@ class Save {
         return writeNote('db/db.json', JSON.stringify(note));
     }
     read() {
-        return storedNote('db/db.json', 'utf8');
+        return readNote('db/db.json', 'utf8');
     }
 
-    fetchNotes() {
+    grabNotes() {
         return this.read().then(notes => {
             let parsedNotes;
             try {
@@ -27,10 +27,21 @@ class Save {
 
     addNote(note) {
         const { title, text } = note;
+        if (!title || !text) {
+            throw new Error('Please enter a title and some text for your note!');
+        }
         
         const newNote = { title, text, id: uuidv4() };
 
-        return this.fetchNotes().then(notes => notes.filter(note => note.id !== id))
+        return this.grabNotes()
+        .then(notes => [...notes, newNote])
+        .then(addedNote => this.write(addedNote))
+        .then(() => newNote);
+    }
+
+    deleteNote(id) {
+        return this.grabNotes()
+        .then(notes => notes.filter(note => note.id !== id))
         .then(filteredNotes => this.write(filteredNotes));
     }
 }
