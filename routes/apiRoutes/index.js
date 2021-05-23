@@ -10,9 +10,6 @@ router.get('/notes', (req, res) => {
 
 router.get('/notes/:id', (req, res) => {
     const noteData = notes.filter(note => note.id === parseInt(req.params.id));
-    if (!noteData) {
-        throw new Error("You don't have any notes!");
-    } 
     return res.send(noteData);
 });
 
@@ -23,9 +20,6 @@ router.post('/notes', (req, res) =>{
         text: req.body.text,
         id: uuid.v4()
     }
-    if (!newNote.title || !newNote.text) {
-        throw new Error('Please enter a title and some text for your note.');
-    }
     notes.push(newNote);
     fs.writeFileSync(
         path.join(__dirname, '../../db/db.json'),
@@ -34,8 +28,7 @@ router.post('/notes', (req, res) =>{
     return newNote;
 });
 
-router.delete((req, res) => {
-    const renderedNote = notes.some(note => note.id === req.params.id)
+router.delete('/notes/:id', (req, res) => {
     res.json(notes = notes.filter(note => note.id !== req.params.id))
     fs.writeFileSync(
         path.join(__dirname, '../../db/db.json'),
