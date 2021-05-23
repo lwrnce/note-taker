@@ -34,8 +34,13 @@ router.post('/notes', (req, res) =>{
     return newNote;
 });
 
-// router.delete((req, res) => {
-
-// });
+router.delete((req, res) => {
+    const renderedNote = notes.some(note => note.id === req.params.id)
+    res.json(notes = notes.filter(note => note.id !== req.params.id))
+    fs.writeFileSync(
+        path.join(__dirname, '../../db/db.json'),
+        JSON.stringify({ notes }, null, '\t')
+    )
+});
 
 module.exports = router;
